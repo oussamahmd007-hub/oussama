@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OUSSOCASH | الخدمات المالية الرقمية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <style>
+        :root {
+            --background: #fcfcfc;
+            --surface: #ffffff;
+            --border: #eef2f6;
+            --primary: #1a1a1a;
+            --gold: #b5935b;
+            --red: #d63031;
+            --text-gray: #636e72;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--background);
+            margin: 0;
+            padding: 10px;
+            color: var(--primary);
+        }
+
+        .container {
+            max-width: 450px;
+            margin: 15px auto;
+            background: var(--surface);
+            border-radius: 25px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 25px rgba(0,0,0,0.02);
+            overflow: hidden;
+        }
+
+        .header { padding: 40px 20px; text-align: center; }
+        .header h1 { margin: 0; font-size: 28px; font-weight: 900; letter-spacing: 2px; }
+        .header p { margin: 5px 0 0; color: var(--gold); font-size: 12px; font-weight: 700; letter-spacing: 1px; }
+
+        .nav {
+            display: flex;
+            background: #f4f7f9;
+            margin: 0 20px;
+            padding: 5px;
+            border-radius: 12px;
+            gap: 5px;
+        }
+        .nav-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: none;
+            font-family: 'Cairo';
+            font-size: 12px;
+            font-weight: 700;
+            color: #7f8c8d;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+        .nav-btn.active {
+            background: var(--surface);
+            color: var(--primary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .main-content { padding: 25px; }
+
+        .section-card {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+        .section-card h3 { margin: 0 0 8px; font-size: 15px; color: var(--gold); font-weight: 700; }
+        .section-card p { margin: 0; font-size: 13px; color: var(--text-gray); line-height: 1.6; }
+
+        input, select {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 12px;
+            font-family: 'Cairo';
+            font-size: 14px;
+            box-sizing: border-box;
+            background: #fafafa;
+        }
+
+        .alert-red {
+            color: var(--red);
+            font-size: 12px;
+            font-weight: 700;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid rgba(214, 48, 49, 0.1);
+            border-radius: 10px;
+            background: rgba(214, 48, 49, 0.02);
+        }
+
+        .copy-box {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
+        }
+        .copy-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 6px 15px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .promo-banner {
+            background: var(--primary);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .promo-code {
+            color: var(--gold);
+            font-size: 24px;
+            font-weight: 900;
+            margin: 10px 0;
+            letter-spacing: 2px;
+        }
+
+        .faq-item { border-bottom: 1px solid var(--border); padding: 12px 0; cursor: pointer; }
+        .faq-title { font-weight: 700; font-size: 13px; color: var(--primary); }
+        .faq-text { font-size: 12px; color: var(--text-gray); margin-top: 8px; display: none; line-height: 1.5; }
+
+        .whatsapp-link {
+            display: block;
+            text-align: center;
+            padding: 14px;
+            border: 1px solid #25d366;
+            color: #25d366;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 700;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .hidden { display: none; }
+        .footer { text-align: center; padding: 20px; font-size: 10px; color: #bdc3c7; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>OUSSOCASH</h1>
+        <p>الريادة في الحلول المالية</p>
+    </div>
+
+    <div class="nav">
+        <button class="nav-btn active" onclick="showTab('about', this)">من نحن</button>
+        <button class="nav-btn" onclick="showTab('trade', this)">المعاملات</button>
+        <button class="nav-btn" onclick="showTab('promo', this)">الرمز الترويجي</button>
+        <button class="nav-btn" onclick="showTab('help', this)">المساعدة</button>
+    </div>
+
+    <div class="main-content">
+        
+        <div id="about">
+            <div class="section-card">
+                <h3>الموثوقية</h3>
+                <p>وكالة معتمدة تضمن لك أعلى معايير الأمان في كافة تعاملاتك المالية الرقمية.</p>
+            </div>
+            <div class="section-card">
+                <h3>السرعة</h3>
+                <p>نلتزم بمعالجة الطلبات وتنفيذها في فترات قياسية لضمان استمرارية أعمالك.</p>
+            </div>
+        </div>
+
+        <div id="trade" class="hidden">
+            <select id="opType" onchange="toggleForm()">
+                <option value="deposit">طلب إيداع (شحن)</option>
+                <option value="withdraw">طلب سحب (كاش)</option>
+            </select>
+
+            <div id="depositSection">
+                <select id="depositBank" onchange="showDepositCopy()">
+                    <option value="">-- اختر البنك المودع منه --</option>
+                    <option>بنكيلي - Bankily</option>
+                    <option>مصرفي - Masrivi</option>
+                    <option>سداد - Sedad</option>
+                    <option>بيم بنك - BIM Bank</option>
+                </select>
+                <div id="copyArea" class="hidden">
+                    <div class="copy-box">
+                        <span id="transferNum" style="font-weight:900;">49543135</span>
+                        <button class="copy-btn" onclick="copyNumber()">نسخ الرقم</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="withdrawSection" class="hidden">
+                <div class="alert-red">
+                    تنبيه: يرجى التأكد من اختيار السحب على عنوان الوكالة: المدينة الرياض، الشارع OUSSOCASH.
+                </div>
+                <select id="withdrawBank">
+                    <option value="">-- اختر البنك المستلم --</option>
+                    <option>بنكيلي - Bankily</option>
+                    <option>مصرفي - Masrivi</option>
+                    <option>سداد - Sedad</option>
+                    <option>بيم بنك - BIM Bank</option>
+                </select>
+                <input type="text" id="withdrawCode" placeholder="كود السحب">
+            </div>
+
+            <input type="text" id="accId" placeholder="رقم الحساب (ID)">
+            <input type="number" id="amount" placeholder="المبلغ">
+            <input type="number" id="phone" placeholder="رقم الهاتف">
+            
+            <button class="submit-btn" onclick="submitToFirebase()">إرسال الطلب</button>
+        </div>
+
+        <div id="promo" class="hidden">
+            <div class="promo-banner">
+                <div style="font-size: 11px; opacity: 0.8;">الرمز الترويجي</div>
+                <div class="promo-code">OUSSO</div>
+                <p style="font-size: 13px; margin: 0;">بونص بقيمة 200% على الإيداع الأول</p>
+            </div>
+            <div class="section-card">
+                <h3>طريقة التفعيل</h3>
+                <p>استخدم الكود OUSSO عند تسجيل حسابك الجديد، وسيتم إضافة البونص تلقائياً بعد أول عملية إيداع عبر الوكالة.</p>
+            </div>
+        </div>
+
+        <div id="help" class="hidden">
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-title">خطأ في رقم الحساب (ID)</div>
+                <div class="faq-text">يرجى التواصل الفوري مع الدعم الفني وتزويدنا بصورة الوصل لتصحيح البيانات يدوياً.</div>
+            </div>
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-title">مدة تنفيذ الطلب</div>
+                <div class="faq-text">يتم التنفيذ عادةً في غضون 2 إلى 10 دقائق من استلام الطلب.</div>
+            </div>
+
+            <a href="https://wa.me/22249543135" class="whatsapp-link">الدعم الفني عبر واتساب</a>
+        </div>
+
+    </div>
+    <div class="footer">OUSSOCASH © 2026</div>
+</div>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyBys-N8W_UmVSdke5AV3ugUv0L631fA_ag",
+        authDomain: "oussocash.firebaseapp.com",
+        databaseURL: "https://oussocash-default-rtdb.firebaseio.com",
+        projectId: "oussocash",
+        storageBucket: "oussocash.firebasestorage.app",
+        messagingSenderId: "645573493816",
+        appId: "1:645573493816:web:f53e6ca58e8a6c518d5e6d"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function showTab(id, btn) {
+        document.querySelectorAll('.main-content > div').forEach(d => d.classList.add('hidden'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.remove('hidden');
+        btn.classList.add('active');
+    }
+
+    function toggleForm() {
+        const type = document.getElementById('opType').value;
+        document.getElementById('depositSection').classList.toggle('hidden', type === 'withdraw');
+        document.getElementById('withdrawSection').classList.toggle('hidden', type === 'deposit');
+    }
+
+    function showDepositCopy() {
+        document.getElementById('copyArea').classList.toggle('hidden', document.getElementById('depositBank').value === "");
+    }
+
+    function copyNumber() {
+        navigator.clipboard.writeText("49543135").then(() => alert("تم نسخ الرقم"));
+    }
+
+    function toggleFaq(el) {
+        const txt = el.querySelector('.faq-text');
+        txt.style.display = (txt.style.display === 'block') ? 'none' : 'block';
+    }
+
+    function submitToFirebase() {
+        const type = document.getElementById('opType').value;
+        const data = {
+            النوع: type === 'deposit' ? 'إيداع' : 'سحب',
+            البنك: type === 'deposit' ? document.getElementById('depositBank').value : document.getElementById('withdrawBank').value,
+            كود_السحب: type === 'withdraw' ? document.getElementById('withdrawCode').value : '-',
+            الآيدي: document.getElementById('accId').value,
+            المبلغ: document.getElementById('amount').value,
+            الهاتف: document.getElementById('phone').value,
+            الحالة: 'قيد الانتظار',
+            التوقيت: new Date().toLocaleString('ar-SA')
+        };
+
+        if(!data.الآيدي || !data.المبلغ) return alert("يرجى إدخال البيانات المطلوبة");
+
+        db.ref('orders').push(data).then(() => {
+            alert("تم إرسال الطلب بنجاح");
+            location.reload();
+        });
+    }
+</script>
+</body>
+</html>
