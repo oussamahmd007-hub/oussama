@@ -3,83 +3,290 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة تحكم الأدمين | OUSSOCASH</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <title>OUSSOCASH Admin | النخبة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;900&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
-        body { font-family: 'Cairo', sans-serif; background-color: #f0f2f5; padding: 20px; }
-        .admin-container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #1a1a1a; border-bottom: 2px solid #b5935b; padding-bottom: 10px; }
-        .order-card { border: 1px solid #eef2f6; padding: 15px; margin-bottom: 15px; border-radius: 10px; position: relative; background: #fafafa; }
-        .order-card.deposit { border-right: 5px solid #2ecc71; }
-        .order-card.withdraw { border-right: 5px solid #e74c3c; }
-        .order-details { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px; }
-        .label { font-weight: bold; color: #636e72; }
-        .value { color: #2d3436; }
-        .status-badge { display: inline-block; padding: 5px 10px; border-radius: 5px; background: #ffeaa7; font-size: 12px; font-weight: bold; }
-        .delete-btn { background: #ff7675; color: white; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer; float: left; }
+        :root {
+            --gold: #c5a059;
+            --dark-bg: #0f172a;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --success: #10b981;
+            --danger: #ef4444;
+            --text-main: #1e293b;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: var(--dark-bg);
+            background-image: radial-gradient(circle at top right, #1e293b, #0f172a);
+            margin: 0;
+            padding: 20px;
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        /* نظام الإشعارات الاحترافي */
+        #toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--gold);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: bold;
+            display: none;
+            z-index: 10000;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            animation: fadeInDown 0.4s ease;
+        }
+
+        .admin-wrapper { max-width: 900px; margin: auto; }
+
+        /* الهيدر */
+        .admin-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        .admin-header h1 { font-weight: 900; letter-spacing: 1px; margin: 0; font-size: 28px; }
+        .admin-header p { color: var(--gold); margin: 5px 0; font-size: 14px; opacity: 0.8; }
+
+        /* التبويبات */
+        .main-nav {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            margin-bottom: 25px;
+            padding: 5px;
+        }
+        .nav-link {
+            flex: 1;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-family: 'Cairo';
+            font-weight: 700;
+            white-space: nowrap;
+            transition: 0.3s;
+        }
+        .nav-link.active {
+            background: var(--gold);
+            box-shadow: 0 4px 15px rgba(197, 160, 89, 0.4);
+        }
+
+        /* بطاقات الطلبات */
+        .order-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: 0.3s;
+            position: relative;
+        }
+        .order-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+
+        .type-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        .badge-deposit { background: #dcfce7; color: #166534; }
+        .badge-withdraw { background: #fee2e2; color: #991b1b; }
+
+        .info-row { display: flex; justify-content: space-between; margin: 8px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 5px; }
+        .label { color: #64748b; font-size: 13px; }
+        .val { font-weight: 700; color: var(--text-main); }
+
+        .copy-btn {
+            background: #f1f5f9;
+            border: none;
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-size: 11px;
+            cursor: pointer;
+            color: var(--gold);
+            margin-right: 5px;
+        }
+
+        .proof-btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            background: #f8fafc;
+            color: var(--gold);
+            text-decoration: none;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-weight: bold;
+            border: 1px solid #e2e8f0;
+        }
+
+        .actions { display: flex; gap: 10px; }
+        .btn { flex: 1; padding: 12px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .btn-approve { background: var(--success); color: white; }
+        .btn-reject { background: var(--danger); color: white; }
+
+        /* قسم الإعدادات */
+        .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; color: white; margin-bottom: 5px; font-size: 13px; }
+        input, select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #334155; background: #1e293b; color: white; font-family: 'Cairo'; box-sizing: border-box;}
+
+        @keyframes fadeInDown { from { opacity: 0; transform: translate(-50%, -20px); } to { opacity: 1; transform: translate(-50%, 0); } }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-<div class="admin-container">
-    <h2>لوحة مراقبة الطلبات الواردة</h2>
-    <div id="ordersList">جاري تحميل الطلبات...</div>
+<div id="toast">تمت العملية بنجاح</div>
+
+<div class="admin-wrapper">
+    <div class="admin-header">
+        <h1>OUSSOCASH Control</h1>
+        <p>نظام إدارة العمليات المالية الفوري</p>
+    </div>
+
+    <div class="main-nav">
+        <button class="nav-link active" onclick="switchSection('pending', this)">قيد المراجعة</button>
+        <button class="nav-link" onclick="switchSection('deposit_arch', this)">أرشيف الإيداع</button>
+        <button class="nav-link" onclick="switchSection('withdraw_arch', this)">أرشيف السحب</button>
+        <button class="nav-link" onclick="switchSection('settings', this)">الإعدادات</button>
+    </div>
+
+    <div id="orders-container"></div>
+
+    <div id="settings-section" class="hidden">
+        <div class="card" style="background: rgba(30, 41, 59, 0.5); border-color: var(--gold);">
+            <h3 style="color:var(--gold)">تعديل البيانات الأساسية</h3>
+            <div class="input-group">
+                <label>تغيير رقم واتساب الدعم:</label>
+                <input type="text" id="waNum" placeholder="مثال: 22249543135">
+            </div>
+            <div class="settings-grid">
+                <div class="input-group">
+                    <label>اختر المحفظة:</label>
+                    <select id="bankName">
+                        <option>Bankily</option><option>Sedad</option><option>Masrivi</option><option>BIM Bank</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>الرقم الجديد:</label>
+                    <input type="text" id="bankNum" placeholder="رقم المحفظة">
+                </div>
+            </div>
+            <button onclick="saveSettings()" class="btn" style="background:var(--gold); color:white; width:100%; margin-top:10px">حفظ التغييرات</button>
+        </div>
+    </div>
 </div>
 
 <script>
-    // نفس إعدادات Firebase الخاصة بك لضمان الاتصال
-    const firebaseConfig = {
-        apiKey: "AIzaSyBys-N8W_UmVSdke5AV3ugUv0L631fA_ag",
-        authDomain: "oussocash.firebaseapp.com",
-        databaseURL: "https://oussocash-default-rtdb.firebaseio.com",
-        projectId: "oussocash",
-        storageBucket: "oussocash.firebasestorage.app",
-        messagingSenderId: "645573493816",
-        appId: "1:645573493816:web:f53e6ca58e8a6c518d5e6d"
-    };
+    const firebaseConfig = { databaseURL: "https://oussocash-default-rtdb.firebaseio.com" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // استماع مباشر للطلبات من مسار 'orders' كما هو في كود المستخدم
-    db.ref('orders').on('value', (snapshot) => {
-        const ordersList = document.getElementById('ordersList');
-        ordersList.innerHTML = '';
+    function notify(msg) {
+        const t = document.getElementById('toast');
+        t.innerText = msg;
+        t.style.display = 'block';
+        setTimeout(() => t.style.display = 'none', 3000);
+    }
+
+    function copy(val) {
+        navigator.clipboard.writeText(val);
+        notify("تم نسخ: " + val);
+    }
+
+    function switchSection(sec, btn) {
+        document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
         
-        if (!snapshot.exists()) {
-            ordersList.innerHTML = '<p style="text-align:center;">لا توجد طلبات حالياً</p>';
-            return;
-        }
-
-        snapshot.forEach((childSnapshot) => {
-            const data = childSnapshot.val();
-            const id = childSnapshot.key;
-            const typeClass = data.النوع === 'إيداع' ? 'deposit' : 'withdraw';
-
-            ordersList.innerHTML += `
-                <div class="order-card ${typeClass}">
-                    <button class="delete-btn" onclick="deleteOrder('${id}')">حذف</button>
-                    <div class="order-details">
-                        <div><span class="label">النوع:</span> <span class="value">${data.النوع}</span></div>
-                        <div><span class="label">الوقت:</span> <span class="value">${data.التوقيت}</span></div>
-                        <div><span class="label">الآيدي (ID):</span> <span class="value" style="font-weight:900; color:blue;">${data.الآيدي}</span></div>
-                        <div><span class="label">المبلغ:</span> <span class="value" style="font-weight:900; color:green;">${data.المبلغ}</span></div>
-                        <div><span class="label">البنك:</span> <span class="value">${data.البنك}</span></div>
-                        <div><span class="label">الهاتف:</span> <span class="value">${data.الهاتف}</span></div>
-                        <div><span class="label">كود السحب:</span> <span class="value">${data.كود_السحب}</span></div>
-                        <div><span class="label">الحالة:</span> <span class="status-badge">${data.الحالة}</span></div>
-                    </div>
-                </div>
-            `;
-        });
-    });
-
-    function deleteOrder(id) {
-        if(confirm('هل تم تنفيذ الطلب وتريد حذفه؟')) {
-            db.ref('orders/' + id).remove();
+        const container = document.getElementById('orders-container');
+        const setSec = document.getElementById('settings-section');
+        
+        if(sec === 'settings') {
+            container.classList.add('hidden');
+            setSec.classList.remove('hidden');
+        } else {
+            setSec.classList.add('hidden');
+            container.classList.remove('hidden');
+            fetchOrders(sec);
         }
     }
+
+    function fetchOrders(type) {
+        let query = db.ref('orders');
+        const container = document.getElementById('orders-container');
+        container.innerHTML = '<p style="color:white; text-align:center">جاري جلب البيانات...</p>';
+
+        query.on('value', snap => {
+            container.innerHTML = '';
+            snap.forEach(child => {
+                const d = child.val();
+                let show = false;
+
+                if(type === 'pending' && d.الحالة === 'قيد الانتظار') show = true;
+                if(type === 'deposit_arch' && d.الحالة === 'مكتمل' && d.النوع === 'إيداع') show = true;
+                if(type === 'withdraw_arch' && d.الحالة === 'مكتمل' && d.النوع === 'سحب') show = true;
+
+                if(show) {
+                    container.innerHTML += `
+                        <div class="order-card">
+                            <span class="type-badge ${d.النوع === 'إيداع' ? 'badge-deposit' : 'badge-withdraw'}">${d.النوع} - ${d.البنك}</span>
+                            <div class="info-row"><span class="label">ID المستخدم:</span><span class="val">${d.الآيدي} <button class="copy-btn" onclick="copy('${d.الآيدي}')">نسخ</button></span></div>
+                            <div class="info-row"><span class="label">المبلغ:</span><span class="val" style="color:var(--gold)">${d.المبلغ} MRU</span></div>
+                            <div class="info-row"><span class="label">رقم الهاتف:</span><span class="val">${d.الهاتف} <button class="copy-btn" onclick="copy('${d.الهاتف}')">نسخ</button></span></div>
+                            ${d.كود_السحب !== '-' ? `<div class="info-row"><span class="label">كود السحب:</span><span class="val">${d.كود_السحب} <button class="copy-btn" onclick="copy('${d.كود_السحب}')">نسخ</button></span></div>` : ''}
+                            
+                            <a href="${d.رابط_إثبات || '#'}" target="_blank" class="proof-btn">👁️ عرض إثبات الدفع (صورة)</a>
+
+                            ${d.الحالة === 'قيد الانتظار' ? `
+                                <div class="actions">
+                                    <button class="btn btn-approve" onclick="updateStat('${child.key}','مكتمل')">موافقة</button>
+                                    <button class="btn btn-reject" onclick="reject('${child.key}')">رفض</button>
+                                </div>
+                            ` : `<div style="text-align:center; color:var(--success); font-weight:bold; font-size:12px">الحالة: ${d.الحالة}</div>`}
+                        </div>`;
+                }
+            });
+            if(container.innerHTML === '') container.innerHTML = '<p style="color:white; text-align:center">لا توجد طلبات في هذا القسم</p>';
+        });
+    }
+
+    function updateStat(key, status, reason = "") {
+        db.ref('orders/' + key).update({ الحالة: status, سبب_الرفض: reason })
+        .then(() => notify("تم تحديث حالة الطلب بنجاح"));
+    }
+
+    function reject(key) {
+        const msg = prompt("أدخل سبب الرفض للعميل:");
+        if(msg) updateStat(key, 'مرفوض', msg);
+    }
+
+    function saveSettings() {
+        const wa = document.getElementById('waNum').value;
+        const bName = document.getElementById('bankName').value;
+        const bNum = document.getElementById('bankNum').value;
+
+        if(wa) db.ref('app_settings/whatsapp').set(wa);
+        if(bNum) db.ref('active_banks/' + bName).set(bNum);
+        
+        notify("تم حفظ الإعدادات بنجاح");
+    }
+
+    // تشغيل القسم الأول تلقائياً
+    fetchOrders('pending');
 </script>
 </body>
 </html>
