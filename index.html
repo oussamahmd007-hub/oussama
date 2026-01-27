@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OUSSOCASH | الخدمات المالية الرقمية</title>
+    <title>OUSSOCASH | النخبة للخدمات المالية</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
         :root {
-            --background: #fcfcfc;
+            --background: #f8fafc;
             --surface: #ffffff;
             --border: #eef2f6;
-            --primary: #1a1a1a;
-            --gold: #b5935b;
-            --red: #d63031;
-            --text-gray: #636e72;
+            --primary: #0f172a;
+            --gold: #c5a059;
+            --gold-light: #fdfaf3;
+            --error: #ef4444;
+            --text-gray: #64748b;
         }
 
         body {
@@ -30,172 +31,93 @@
             max-width: 450px;
             margin: 15px auto;
             background: var(--surface);
-            border-radius: 25px;
+            border-radius: 35px;
             border: 1px solid var(--border);
-            box-shadow: 0 4px 25px rgba(0,0,0,0.02);
+            box-shadow: 0 10px 50px rgba(0,0,0,0.04);
             overflow: hidden;
         }
 
         .header { padding: 40px 20px; text-align: center; }
-        .header h1 { margin: 0; font-size: 28px; font-weight: 900; letter-spacing: 2px; }
-        .header p { margin: 5px 0 0; color: var(--gold); font-size: 12px; font-weight: 700; letter-spacing: 1px; }
+        .header h1 { margin: 0; font-size: 30px; font-weight: 900; letter-spacing: 2px; }
+        .header p { margin: 5px 0 0; color: var(--gold); font-size: 13px; font-weight: 700; }
 
-        .nav {
-            display: flex;
-            background: #f4f7f9;
-            margin: 0 20px;
-            padding: 5px;
-            border-radius: 12px;
-            gap: 5px;
-        }
-        .nav-btn {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            background: none;
-            font-family: 'Cairo';
-            font-size: 12px;
-            font-weight: 700;
-            color: #7f8c8d;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: 0.3s;
-        }
-        .nav-btn.active {
-            background: var(--surface);
-            color: var(--primary);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
+        /* التنقل */
+        .nav { display: flex; background: #f1f5f9; margin: 0 15px; padding: 5px; border-radius: 18px; gap: 2px; }
+        .nav-btn { flex: 1; padding: 12px 2px; border: none; background: none; font-family: 'Cairo'; font-size: 11px; font-weight: 700; color: var(--text-gray); cursor: pointer; border-radius: 14px; }
+        .nav-btn.active { background: var(--surface); color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.06); }
 
-        .main-content { padding: 25px; }
+        .main-content { padding: 25px 20px; }
 
-        .section-card {
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 15px;
-            margin-bottom: 15px;
-        }
-        .section-card h3 { margin: 0 0 8px; font-size: 15px; color: var(--gold); font-weight: 700; }
-        .section-card p { margin: 0; font-size: 13px; color: var(--text-gray); line-height: 1.6; }
+        /* قسم المساعدة والأسئلة الشائعة */
+        .faq-container { margin-top: 10px; }
+        .faq-item { background: #fafafa; border-radius: 15px; margin-bottom: 12px; border: 1px solid #f1f5f9; overflow: hidden; transition: 0.3s; }
+        .faq-question { padding: 15px; font-size: 14px; font-weight: 700; display: flex; justify-content: space-between; cursor: pointer; align-items: center; }
+        .faq-answer { padding: 0 15px 15px; font-size: 13px; color: var(--text-gray); display: none; line-height: 1.6; border-top: 1px solid #f1f5f9; padding-top: 10px; }
+        .faq-item.active .faq-answer { display: block; }
+        .faq-item.active { border-color: var(--gold); background: #fff; }
 
-        input, select {
-            width: 100%;
-            padding: 14px;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            margin-bottom: 12px;
-            font-family: 'Cairo';
-            font-size: 14px;
-            box-sizing: border-box;
-            background: #fafafa;
+        /* اللافتة الاحترافية (Toast) */
+        #toast-notification {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: var(--primary); color: white; padding: 12px 25px; border-radius: 50px;
+            font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 10px;
+            z-index: 9999; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
+        #toast-notification.show { transform: translateX(-50%) translateY(0); }
+        #toast-notification.error { border-bottom: 3px solid var(--error); }
+        #toast-notification.success { border-bottom: 3px solid var(--gold); }
 
-        .alert-red {
-            color: var(--red);
-            font-size: 12px;
-            font-weight: 700;
-            line-height: 1.5;
-            margin-bottom: 15px;
-            padding: 10px;
-            border: 1px solid rgba(214, 48, 49, 0.1);
-            border-radius: 10px;
-            background: rgba(214, 48, 49, 0.02);
-        }
-
-        .copy-box {
-            background: #f8fafc;
-            padding: 12px;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            border: 1px solid var(--border);
-        }
-        .copy-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 6px 15px;
-            border-radius: 6px;
-            font-size: 11px;
-            cursor: pointer;
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 16px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 15px;
-            cursor: pointer;
-        }
-
-        .promo-banner {
-            background: var(--primary);
-            color: white;
-            padding: 25px;
-            border-radius: 15px;
-            text-align: center;
-            margin-bottom: 15px;
-        }
-        .promo-code {
-            color: var(--gold);
-            font-size: 24px;
-            font-weight: 900;
-            margin: 10px 0;
-            letter-spacing: 2px;
-        }
-
-        .faq-item { border-bottom: 1px solid var(--border); padding: 12px 0; cursor: pointer; }
-        .faq-title { font-weight: 700; font-size: 13px; color: var(--primary); }
-        .faq-text { font-size: 12px; color: var(--text-gray); margin-top: 8px; display: none; line-height: 1.5; }
-
-        .whatsapp-link {
-            display: block;
-            text-align: center;
-            padding: 14px;
-            border: 1px solid #25d366;
-            color: #25d366;
-            text-decoration: none;
-            border-radius: 12px;
-            font-weight: 700;
-            margin-top: 20px;
-            font-size: 14px;
-        }
+        /* الحقول والأزرار */
+        input, select { width: 100%; padding: 16px; border: 1px solid var(--border); border-radius: 15px; margin-bottom: 15px; font-family: 'Cairo'; box-sizing: border-box; }
+        .submit-btn { width: 100%; padding: 18px; background: var(--primary); color: white; border: none; border-radius: 15px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        
+        /* تذييل الصفحة */
+        .luxury-footer { text-align: center; padding: 30px 20px; background: #fafafa; border-top: 1px solid var(--border); }
+        .copyright { font-size: 11px; font-weight: 900; color: var(--primary); letter-spacing: 1.5px; }
 
         .hidden { display: none; }
-        .footer { text-align: center; padding: 20px; font-size: 10px; color: #bdc3c7; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-card { background: white; padding: 30px; border-radius: 30px; text-align: center; width: 85%; max-width: 320px; }
     </style>
 </head>
 <body>
 
+<div id="toast-notification">
+    <span id="toast-icon">✨</span>
+    <span id="toast-message">تمت العملية</span>
+</div>
+
+<div class="modal-overlay" id="successModal">
+    <div class="modal-card">
+        <div style="font-size: 50px;">⏳</div>
+        <h2 style="font-size: 18px;">طلبك تحت المراجعة</h2>
+        <p style="color: var(--text-gray); font-size: 13px;">فريق OUSSOCASH يعمل على طلبك الآن، ستتم المعالجة خلال دقائق.</p>
+        <button onclick="closeModal()" style="background:var(--primary); color:white; border:none; padding:12px 40px; border-radius:12px; cursor:pointer; font-weight:700; margin-top:10px;">حسناً</button>
+    </div>
+</div>
+
 <div class="container">
     <div class="header">
         <h1>OUSSOCASH</h1>
-        <p>الريادة في الحلول المالية</p>
+        <p>الرفاهية في عالم المال الرقمي</p>
     </div>
 
     <div class="nav">
         <button class="nav-btn active" onclick="showTab('about', this)">من نحن</button>
         <button class="nav-btn" onclick="showTab('trade', this)">المعاملات</button>
-        <button class="nav-btn" onclick="showTab('promo', this)">الرمز الترويجي</button>
+        <button class="nav-btn" onclick="showTab('promo', this)">الخصومات</button>
         <button class="nav-btn" onclick="showTab('help', this)">المساعدة</button>
+        <button class="nav-btn" onclick="showTab('status', this)">طلباتي</button>
     </div>
 
     <div class="main-content">
         
         <div id="about">
-            <div class="section-card">
-                <h3>الموثوقية</h3>
-                <p>وكالة معتمدة تضمن لك أعلى معايير الأمان في كافة تعاملاتك المالية الرقمية.</p>
-            </div>
-            <div class="section-card">
-                <h3>السرعة</h3>
-                <p>نلتزم بمعالجة الطلبات وتنفيذها في فترات قياسية لضمان استمرارية أعمالك.</p>
-            </div>
+            <h3 style="color: var(--gold); font-size: 18px;">هويتنا المهنية</h3>
+            <p style="font-size: 14px; color: var(--text-gray); line-height: 1.8;">
+                تعد <b>OUSSOCASH</b> الوكالة الرائدة في تقديم حلول الشحن والسحب الفوري. نرتكز على <b>المصداقية</b> كعقيدة عمل، و<b>السرعة</b> كمعيار للنجاح، لنضمن لك تجربة مالية لا تشوبها شائبة.
+            </p>
         </div>
 
         <div id="trade" class="hidden">
@@ -203,9 +125,8 @@
                 <option value="deposit">طلب إيداع (شحن)</option>
                 <option value="withdraw">طلب سحب (كاش)</option>
             </select>
-
             <div id="depositSection">
-                <select id="depositBank" onchange="showDepositCopy()">
+                <select id="depositBank" onchange="toggleCopyArea()">
                     <option value="">-- اختر البنك المودع منه --</option>
                     <option>بنكيلي - Bankily</option>
                     <option>مصرفي - Masrivi</option>
@@ -213,17 +134,13 @@
                     <option>بيم بنك - BIM Bank</option>
                 </select>
                 <div id="copyArea" class="hidden">
-                    <div class="copy-box">
+                    <div style="background:var(--gold-light); padding:15px; border-radius:15px; border:1px dashed var(--gold); display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                         <span id="transferNum" style="font-weight:900;">49543135</span>
-                        <button class="copy-btn" onclick="copyNumber()">نسخ الرقم</button>
+                        <button onclick="copyNum()" style="background:var(--gold); color:white; border:none; padding:8px 15px; border-radius:10px; cursor:pointer;">نسخ</button>
                     </div>
                 </div>
             </div>
-
             <div id="withdrawSection" class="hidden">
-                <div class="alert-red">
-                    تنبيه: يرجى التأكد من اختيار السحب على عنوان الوكالة: المدينة الرياض، الشارع OUSSOCASH.
-                </div>
                 <select id="withdrawBank">
                     <option value="">-- اختر البنك المستلم --</option>
                     <option>بنكيلي - Bankily</option>
@@ -231,63 +148,79 @@
                     <option>سداد - Sedad</option>
                     <option>بيم بنك - BIM Bank</option>
                 </select>
-                <input type="text" id="withdrawCode" placeholder="كود السحب">
+                <input type="text" id="withdrawCode" placeholder="كود السحب البنكي">
             </div>
-
             <input type="text" id="accId" placeholder="رقم الحساب (ID)">
             <input type="number" id="amount" placeholder="المبلغ">
             <input type="number" id="phone" placeholder="رقم الهاتف">
-            
-            <button class="submit-btn" onclick="submitToFirebase()">إرسال الطلب</button>
+            <button class="submit-btn" onclick="sendOrder()">إرسال الطلب للمراجعة</button>
         </div>
 
         <div id="promo" class="hidden">
-            <div class="promo-banner">
-                <div style="font-size: 11px; opacity: 0.8;">الرمز الترويجي</div>
-                <div class="promo-code">OUSSO</div>
-                <p style="font-size: 13px; margin: 0;">بونص بقيمة 200% على الإيداع الأول</p>
+            <div style="background: var(--primary); padding: 25px; border-radius: 20px; color: white; text-align: center;">
+                <div style="color: var(--gold); font-weight: 700; font-size: 12px;">كود الترحيب</div>
+                <div style="font-size: 32px; font-weight: 900; margin: 10px 0;">OUSSO</div>
+                <div style="font-size: 15px;">بونيص بقيمة 200% فوري</div>
             </div>
-            <div class="section-card">
-                <h3>طريقة التفعيل</h3>
-                <p>استخدم الكود OUSSO عند تسجيل حسابك الجديد، وسيتم إضافة البونص تلقائياً بعد أول عملية إيداع عبر الوكالة.</p>
-            </div>
+            <p style="font-size: 13px; margin-top: 15px; color: var(--text-gray);">استخدم الكود عند التسجيل وقم بأول إيداع عبر وكالتنا لتفعيل المكافأة.</p>
         </div>
 
         <div id="help" class="hidden">
-            <div class="faq-item" onclick="toggleFaq(this)">
-                <div class="faq-title">خطأ في رقم الحساب (ID)</div>
-                <div class="faq-text">يرجى التواصل الفوري مع الدعم الفني وتزويدنا بصورة الوصل لتصحيح البيانات يدوياً.</div>
+            <h3 style="font-size: 15px; color: var(--gold); margin-bottom: 15px;">الأسئلة الشائعة</h3>
+            <div class="faq-container">
+                <div class="faq-item" onclick="this.classList.toggle('active')">
+                    <div class="faq-question">كم تستغرق مدة الشحن؟ <span>+</span></div>
+                    <div class="faq-answer">نحن نعتز بالسرعة؛ يتم تنفيذ الطلبات عادة في غضون 2 إلى 10 دقائق من استلام التحويل.</div>
+                </div>
+                <div class="faq-item" onclick="this.classList.toggle('active')">
+                    <div class="faq-question">ماذا لو أرسلت لـ ID خاطئ؟ <span>+</span></div>
+                    <div class="faq-answer">يرجى التواصل الفوري مع الدعم الفني عبر واتساب قبل معالجة الطلب لتعديل البيانات.</div>
+                </div>
+                <div class="faq-item" onclick="this.classList.toggle('active')">
+                    <div class="faq-question">هل الخدمة متوفرة الآن؟ <span>+</span></div>
+                    <div class="faq-answer">نعم، نحن نعمل على مدار الساعة لتلبية طلباتكم في أي وقت.</div>
+                </div>
             </div>
-            <div class="faq-item" onclick="toggleFaq(this)">
-                <div class="faq-title">مدة تنفيذ الطلب</div>
-                <div class="faq-text">يتم التنفيذ عادةً في غضون 2 إلى 10 دقائق من استلام الطلب.</div>
-            </div>
+            <a href="https://wa.me/22249543135" style="display:block; text-align:center; padding:15px; background:#25d366; color:white; border-radius:15px; text-decoration:none; font-weight:700; margin-top:20px;">تواصل مباشر عبر واتساب</a>
+        </div>
 
-            <a href="https://wa.me/22249543135" class="whatsapp-link">الدعم الفني عبر واتساب</a>
+        <div id="status" class="hidden">
+            <div id="ordersList">
+                <p style="text-align:center; font-size:12px; color:var(--text-gray);">لا توجد طلبات مرتبطة برقمك حالياً</p>
+            </div>
         </div>
 
     </div>
-    <div class="footer">OUSSOCASH © 2026</div>
+
+    <div class="luxury-footer">
+        <div class="copyright">OUSSOCASH LUXURY SERVICES © 2026</div>
+    </div>
 </div>
 
 <script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyBys-N8W_UmVSdke5AV3ugUv0L631fA_ag",
-        authDomain: "oussocash.firebaseapp.com",
-        databaseURL: "https://oussocash-default-rtdb.firebaseio.com",
-        projectId: "oussocash",
-        storageBucket: "oussocash.firebasestorage.app",
-        messagingSenderId: "645573493816",
-        appId: "1:645573493816:web:f53e6ca58e8a6c518d5e6d"
-    };
+    const firebaseConfig = { databaseURL: "https://oussocash-default-rtdb.firebaseio.com" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+
+    // وظيفة اللافتة الاحترافية
+    function showToast(msg, type = 'error') {
+        const toast = document.getElementById('toast-notification');
+        const icon = document.getElementById('toast-icon');
+        const message = document.getElementById('toast-message');
+        
+        toast.className = type === 'error' ? 'error show' : 'success show';
+        icon.innerText = type === 'error' ? '⚠️' : '✨';
+        message.innerText = msg;
+
+        setTimeout(() => toast.className = '', 3500);
+    }
 
     function showTab(id, btn) {
         document.querySelectorAll('.main-content > div').forEach(d => d.classList.add('hidden'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.remove('hidden');
         btn.classList.add('active');
+        if(id === 'status') loadOrders();
     }
 
     function toggleForm() {
@@ -296,37 +229,64 @@
         document.getElementById('withdrawSection').classList.toggle('hidden', type === 'deposit');
     }
 
-    function showDepositCopy() {
+    function toggleCopyArea() {
         document.getElementById('copyArea').classList.toggle('hidden', document.getElementById('depositBank').value === "");
     }
 
-    function copyNumber() {
-        navigator.clipboard.writeText("49543135").then(() => alert("تم نسخ الرقم"));
+    function copyNum() {
+        navigator.clipboard.writeText("49543135").then(() => showToast("تم نسخ الرقم بنجاح", "success"));
     }
 
-    function toggleFaq(el) {
-        const txt = el.querySelector('.faq-text');
-        txt.style.display = (txt.style.display === 'block') ? 'none' : 'block';
+    function closeModal() {
+        document.getElementById('successModal').style.display = 'none';
+        showTab('status', document.querySelectorAll('.nav-btn')[4]);
     }
 
-    function submitToFirebase() {
+    function sendOrder() {
         const type = document.getElementById('opType').value;
+        const bank = type === 'deposit' ? document.getElementById('depositBank').value : document.getElementById('withdrawBank').value;
+        const id = document.getElementById('accId').value;
+        const amt = document.getElementById('amount').value;
+        const ph = document.getElementById('phone').value;
+        const code = document.getElementById('withdrawCode').value;
+
+        // التحقق من البيانات باللافتة الجديدة
+        if(!bank) return showToast("يرجى اختيار البنك أولاً");
+        if(!id) return showToast("حقل الـ ID مطلوب");
+        if(!amt || amt <= 0) return showToast("يرجى تحديد المبلغ");
+        if(!ph) return showToast("يرجى إدخال رقم هاتفك");
+        if(type === 'withdraw' && !code) return showToast("كود السحب مطلوب للسحب");
+
         const data = {
             النوع: type === 'deposit' ? 'إيداع' : 'سحب',
-            البنك: type === 'deposit' ? document.getElementById('depositBank').value : document.getElementById('withdrawBank').value,
-            كود_السحب: type === 'withdraw' ? document.getElementById('withdrawCode').value : '-',
-            الآيدي: document.getElementById('accId').value,
-            المبلغ: document.getElementById('amount').value,
-            الهاتف: document.getElementById('phone').value,
-            الحالة: 'قيد الانتظار',
+            البنك: bank, الآيدي: id, المبلغ: amt, الهاتف: ph,
+            كود_السحب: code || '-', الحالة: 'قيد المراجعة',
             التوقيت: new Date().toLocaleString('ar-SA')
         };
 
-        if(!data.الآيدي || !data.المبلغ) return alert("يرجى إدخال البيانات المطلوبة");
-
         db.ref('orders').push(data).then(() => {
-            alert("تم إرسال الطلب بنجاح");
-            location.reload();
+            localStorage.setItem('userPhone', ph);
+            document.getElementById('successModal').style.display = 'flex';
+        });
+    }
+
+    function loadOrders() {
+        const phone = localStorage.getItem('userPhone');
+        if(!phone) return;
+        db.ref('orders').orderByChild('الهاتف').equalTo(phone).limitToLast(5).on('value', (snap) => {
+            const list = document.getElementById('ordersList');
+            list.innerHTML = '';
+            if(!snap.exists()) {
+                list.innerHTML = '<p style="text-align:center; font-size:12px; color:gray;">لا توجد طلبات سابقة</p>';
+                return;
+            }
+            snap.forEach((child) => {
+                const o = child.val();
+                list.innerHTML += `<div style="background:#fff; padding:12px; border-radius:12px; border:1px solid #eee; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+                    <div><div style="font-weight:700; font-size:13px;">${o.النوع} - ${o.المبلغ} MRU</div><div style="font-size:10px; color:gray;">${o.التوقيت}</div></div>
+                    <span style="background:#fff8e1; color:#ffa000; font-size:10px; padding:4px 10px; border-radius:20px; font-weight:700;">${o.الحالة}</span>
+                </div>`;
+            });
         });
     }
 </script>
