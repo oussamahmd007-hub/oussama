@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم الأدمين | OUSSOCASH</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <style>
+        body { font-family: 'Cairo', sans-serif; background-color: #f0f2f5; padding: 20px; }
+        .admin-container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #1a1a1a; border-bottom: 2px solid #b5935b; padding-bottom: 10px; }
+        .order-card { border: 1px solid #eef2f6; padding: 15px; margin-bottom: 15px; border-radius: 10px; position: relative; background: #fafafa; }
+        .order-card.deposit { border-right: 5px solid #2ecc71; }
+        .order-card.withdraw { border-right: 5px solid #e74c3c; }
+        .order-details { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px; }
+        .label { font-weight: bold; color: #636e72; }
+        .value { color: #2d3436; }
+        .status-badge { display: inline-block; padding: 5px 10px; border-radius: 5px; background: #ffeaa7; font-size: 12px; font-weight: bold; }
+        .delete-btn { background: #ff7675; color: white; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer; float: left; }
+    </style>
+</head>
+<body>
+
+<div class="admin-container">
+    <h2>لوحة مراقبة الطلبات الواردة</h2>
+    <div id="ordersList">جاري تحميل الطلبات...</div>
+</div>
+
+<script>
+    // نفس إعدادات Firebase الخاصة بك لضمان الاتصال
+    const firebaseConfig = {
+        apiKey: "AIzaSyBys-N8W_UmVSdke5AV3ugUv0L631fA_ag",
+        authDomain: "oussocash.firebaseapp.com",
+        databaseURL: "https://oussocash-default-rtdb.firebaseio.com",
+        projectId: "oussocash",
+        storageBucket: "oussocash.firebasestorage.app",
+        messagingSenderId: "645573493816",
+        appId: "1:645573493816:web:f53e6ca58e8a6c518d5e6d"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // استماع مباشر للطلبات من مسار 'orders' كما هو في كود المستخدم
+    db.ref('orders').on('value', (snapshot) => {
+        const ordersList = document.getElementById('ordersList');
+        ordersList.innerHTML = '';
+        
+        if (!snapshot.exists()) {
+            ordersList.innerHTML = '<p style="text-align:center;">لا توجد طلبات حالياً</p>';
+            return;
+        }
+
+        snapshot.forEach((childSnapshot) => {
+            const data = childSnapshot.val();
+            const id = childSnapshot.key;
+            const typeClass = data.النوع === 'إيداع' ? 'deposit' : 'withdraw';
+
+            ordersList.innerHTML += `
+                <div class="order-card ${typeClass}">
+                    <button class="delete-btn" onclick="deleteOrder('${id}')">حذف</button>
+                    <div class="order-details">
+                        <div><span class="label">النوع:</span> <span class="value">${data.النوع}</span></div>
+                        <div><span class="label">الوقت:</span> <span class="value">${data.التوقيت}</span></div>
+                        <div><span class="label">الآيدي (ID):</span> <span class="value" style="font-weight:900; color:blue;">${data.الآيدي}</span></div>
+                        <div><span class="label">المبلغ:</span> <span class="value" style="font-weight:900; color:green;">${data.المبلغ}</span></div>
+                        <div><span class="label">البنك:</span> <span class="value">${data.البنك}</span></div>
+                        <div><span class="label">الهاتف:</span> <span class="value">${data.الهاتف}</span></div>
+                        <div><span class="label">كود السحب:</span> <span class="value">${data.كود_السحب}</span></div>
+                        <div><span class="label">الحالة:</span> <span class="status-badge">${data.الحالة}</span></div>
+                    </div>
+                </div>
+            `;
+        });
+    });
+
+    function deleteOrder(id) {
+        if(confirm('هل تم تنفيذ الطلب وتريد حذفه؟')) {
+            db.ref('orders/' + id).remove();
+        }
+    }
+</script>
+</body>
+</html>
