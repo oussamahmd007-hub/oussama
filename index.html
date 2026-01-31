@@ -3,448 +3,555 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>OUSSOCASH | المؤسسة المالية المتكاملة</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
-
+    <title>Oussocash | الوكالة الرقمية</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {
-            --navy: #001A33;
-            --royal: #0052CC;
-            --soft-blue: #F0F5FF;
-            --white: #FFFFFF;
-            --border: #E2E8F0;
-            --text-dark: #0F172A;
-            --text-light: #64748B;
-        }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        body { 
-            font-family: 'Cairo', sans-serif; 
-            background-color: var(--soft-blue); 
-            margin: 0; color: var(--text-dark); 
-            line-height: 1.6;
-        }
-
-        /* Modal Premium Design */
-        #ousso-modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px);
-            display: none; justify-content: center; align-items: center; z-index: 9999;
-        }
-        .ousso-modal {
-            background: var(--white); padding: 40px; border-radius: 16px;
-            width: 90%; max-width: 400px; text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        }
-        .ousso-modal h2 { color: var(--navy); font-weight: 900; margin-bottom: 10px; }
-        .ousso-modal button { 
-            background: var(--royal); color: white; border: none;
-            padding: 14px 40px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%;
-        }
-
-        /* Branding Header */
-        header { 
-            background: var(--navy); padding: 80px 20px 120px; 
-            text-align: center; color: var(--white);
-        }
-        .header-logo { font-size: 40px; font-weight: 900; letter-spacing: 1px; margin: 0; }
-        .header-tagline { font-size: 10px; text-transform: uppercase; letter-spacing: 5px; opacity: 0.6; margin-top: 8px; font-weight: 600; }
-
-        /* Smooth Navigation Bar */
-        .nav-container {
-            max-width: 600px; margin: -40px auto 30px; padding: 0 15px;
-        }
-        .nav-bar {
-            display: flex; background: var(--white); padding: 8px;
-            border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            overflow-x: auto; gap: 5px;
-        }
-        .nav-btn {
-            flex: 1; padding: 12px 20px; border: none; background: none;
-            color: var(--text-light); font-family: 'Cairo'; font-weight: 700;
-            font-size: 13px; cursor: pointer; border-radius: 12px;
-            white-space: nowrap; transition: 0.3s;
-        }
-        .nav-btn.active { background: var(--royal); color: var(--white); }
-
-        .content-area { max-width: 600px; margin: 0 auto 100px; padding: 0 20px; }
-
-        /* Card Section Styles */
-        .section-card { 
-            background: var(--white); border-radius: 20px; padding: 35px; 
-            margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0, 26, 51, 0.03);
-            border: 1px solid var(--border);
-        }
-        .card-title { font-size: 20px; font-weight: 900; color: var(--navy); margin-bottom: 25px; }
-
-        /* Realistic Live Visitor Component */
-        .live-status {
-            display: inline-flex; align-items: center; gap: 10px;
-            background: var(--soft-blue); padding: 8px 16px; border-radius: 50px;
-            font-size: 12px; font-weight: 700; color: var(--royal); margin-bottom: 20px;
-        }
-        .pulse-dot { width: 8px; height: 8px; background: #10B981; border-radius: 50%; position: relative; }
-        .pulse-dot::after { content: ''; position: absolute; width: 100%; height: 100%; background: #10B981; border-radius: 50%; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(3); opacity: 0; } }
-
-        /* Statistics Grid */
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 30px; }
-        .stat-item { padding: 20px; background: var(--soft-blue); border-radius: 15px; text-align: center; }
-        .stat-value { display: block; font-size: 22px; font-weight: 900; color: var(--navy); }
-        .stat-label { font-size: 10px; font-weight: 700; color: var(--text-light); text-transform: uppercase; margin-top: 5px; }
-
-        /* Form Design */
-        .field-group { margin-bottom: 22px; }
-        .field-label { display: block; font-size: 12px; font-weight: 800; color: var(--navy); margin-bottom: 10px; }
-        input, select {
-            width: 100%; padding: 16px; border: 1px solid var(--border);
-            border-radius: 12px; font-family: 'Cairo'; font-size: 14px; font-weight: 600;
-            background: #FAFBFC; transition: 0.3s;
-        }
-        input:focus { border-color: var(--royal); background: white; box-shadow: 0 0 0 4px rgba(0, 82, 204, 0.05); }
-
-        /* Upload Area */
-        .upload-box {
-            border: 2px dashed var(--border); border-radius: 15px; padding: 40px 20px;
-            text-align: center; cursor: pointer; transition: 0.3s; background: #FAFBFC;
-        }
-        .upload-box:hover { border-color: var(--royal); background: var(--soft-blue); }
-        #preview-img { width: 100%; max-height: 250px; object-fit: contain; border-radius: 10px; margin-top: 15px; display: none; }
-
-        /* Action Buttons */
-        .btn-action {
-            width: 100%; padding: 20px; border-radius: 15px; border: none;
-            background: var(--royal); color: white; font-weight: 900; font-size: 16px;
-            cursor: pointer; transition: 0.4s; box-shadow: 0 10px 20px rgba(0, 82, 204, 0.2);
-        }
-        .btn-action:disabled { background: var(--text-light); opacity: 0.5; }
-
-        /* Support Center */
-        .support-card {
-            border: 1px solid var(--border); padding: 20px; border-radius: 12px;
-            margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;
-            cursor: pointer; transition: 0.2s;
-        }
-        .support-card:hover { border-color: var(--royal); background: var(--soft-blue); }
-        .support-info h4 { margin: 0; font-size: 14px; font-weight: 800; }
-        .support-info p { margin: 5px 0 0; font-size: 11px; color: var(--text-light); }
-
-        /* Promocode Card */
-        .promo-ticket {
-            background: var(--navy); color: white; border-radius: 20px; padding: 40px;
-            text-align: center; border: 1px solid var(--royal);
-        }
-        .promo-val {
-            font-size: 36px; font-weight: 900; letter-spacing: 8px; margin: 20px 0;
-            padding: 10px; border: 1px dashed rgba(255,255,255,0.3);
-        }
-
-        .hidden { display: none; }
-        
-        /* Admin Access Button */
-        .admin-trigger { text-align: center; padding: 20px; font-size: 9px; opacity: 0.2; font-weight: 900; color: var(--navy); cursor: pointer; }
+        :root { --app-primary: #1e40af; --app-accent: #3b82f6; --app-danger: #ef4444; }
+        body { font-family: 'Cairo', sans-serif; background: #f8fafc; overflow-x: hidden; margin: 0; padding: 0; }
+        .brand-logo { background: linear-gradient(90deg, #1e40af, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .modal-overlay { background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(8px); }
+        .success-gradient { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .animate-pop { animation: popIn 0.3s ease-out forwards; }
+        #toast { visibility: hidden; min-width: 250px; background-color: #1e293b; color: #fff; text-align: center; border-radius: 16px; padding: 16px; position: fixed; z-index: 10000; left: 50%; bottom: 110px; transform: translateX(-50%); font-size: 13px; font-weight: 700; box-shadow: 0 10px 25px rgba(0,0,0,0.2); transition: 0.3s; }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+        @keyframes fadein { from { bottom: 0; opacity: 0; } to { bottom: 110px; opacity: 1; } }
+        @keyframes fadeout { from { bottom: 110px; opacity: 1; } to { bottom: 0; opacity: 0; } }
+        .view-section { display: none; animation: slideUp 0.3s ease-out; }
+        .view-section.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .platform-rect { width: 100%; height: 65px; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; cursor: pointer; font-weight: 900; color: white; transition: 0.3s; font-size: 1.1rem; }
+        .nav-bar { position: fixed; bottom: 20px; left: 15px; right: 15px; height: 75px; background: white; border-radius: 25px; display: flex; justify-content: space-around; align-items: center; box-shadow: 0 15px 35px rgba(0,0,0,0.08); border: 1px solid rgba(0,0,0,0.03); z-index: 9999; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #94a3b8; transition: 0.3s; cursor: pointer; flex: 1; -webkit-tap-highlight-color: transparent; }
+        .nav-item.active { color: var(--app-primary); transform: translateY(-3px); }
+        .nav-item span { font-size: 10px; font-weight: 900; }
+        .input-premium { width: 100%; padding: 15px; background: #fff; border: 1px solid #f1f5f9; border-radius: 15px; font-size: 12px; font-weight: 700; outline: none; transition: 0.2s; }
+        .bank-option { border: 2px solid #f1f5f9; padding: 12px; border-radius: 15px; text-align: center; cursor: pointer; background: white; font-weight: 700; font-size: 12px; }
+        .bank-option.active { border-color: var(--app-primary); background: #eff6ff; color: var(--app-primary); }
+        .dot-pulse { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; display: inline-block; position: relative; margin-left: 8px; }
+        .dot-pulse::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #22c55e; border-radius: 50%; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(3); opacity: 0; } }
+        .promo-premium-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); position: relative; overflow: hidden; }
+        .promo-shine { position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); animation: shine 3s infinite; }
+        @keyframes shine { to { left: 200%; } }
     </style>
 </head>
-<body>
+<body class="antialiased select-none pb-32">
 
-    <div id="ousso-modal-overlay">
-        <div class="ousso-modal">
-            <h2 id="modal-h">إشعار النظام</h2>
-            <p id="modal-p">تمت معالجة طلبك بنجاح.</p>
-            <button onclick="closeModal()">إغلاق النافذة</button>
+    <div id="toast"></div>
+
+    <div id="errorModal" class="hidden fixed inset-0 z-[10000] flex items-center justify-center p-4 modal-overlay">
+        <div class="bg-white w-full max-w-xs rounded-[2.5rem] p-8 text-center shadow-2xl border border-gray-100 animate-pop">
+            <div id="modalIconBox" class="w-20 h-20 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i id="modalIcon" class="fas fa-exclamation-triangle text-3xl"></i>
+            </div>
+            <h3 id="modalTitle" class="text-2xl font-black text-gray-800 mb-2">تنبيه!</h3>
+            <p id="errorMessage" class="text-gray-600 text-sm mb-8 leading-relaxed font-bold"></p>
+            <button onclick="closeModal()" id="modalBtn" class="w-full bg-gray-900 text-white py-4 rounded-2xl font-bold active:scale-95 shadow-lg transition-all">موافق</button>
         </div>
     </div>
 
-    <header>
-        <h1 class="header-logo">OUSSOCASH</h1>
-        <div class="header-tagline">Global Financial Liquidity Agency</div>
-    </header>
+    <div id="authContainer" class="w-full max-w-md mx-auto min-h-screen flex flex-col p-6">
+        <div id="authHeader">
+            <div class="mt-8 mb-6 text-center">
+                <h1 class="brand-logo text-5xl font-black tracking-tighter italic">OUSSOCASH</h1>
+                <div class="h-1.5 w-24 bg-blue-600 mx-auto mt-2 rounded-full"></div>
+            </div>
+        </div>
 
-    <div class="nav-container">
+        <div id="registerScreen" class="space-y-4">
+            <div class="text-right">
+                <h2 class="text-2xl font-bold text-gray-800">إنشاء حساب</h2>
+                <p class="text-blue-600 text-[13px] font-bold">مرحباً بك في أوسوكاش، يسعدنا انضمامك إلينا!</p>
+            </div>
+            <div class="space-y-3">
+                <input type="text" id="regName" placeholder="الاسم الكامل" class="w-full p-4 bg-white border border-gray-200 rounded-2xl outline-none shadow-sm">
+                <div class="relative flex items-center" dir="ltr">
+                    <div class="absolute left-0 bg-gray-100 h-full flex items-center px-4 rounded-l-2xl border-r border-gray-200 font-bold text-blue-700">+222</div>
+                    <input type="number" id="regPhone" placeholder="رقم الهاتف" oninput="if(this.value.length > 8) this.value = this.value.slice(0, 8);" class="w-full pl-20 pr-4 py-4 bg-white border border-gray-200 rounded-2xl outline-none shadow-sm font-bold">
+                </div>
+                <div class="relative">
+                    <input type="password" id="regPass" placeholder="كلمة السر" class="w-full p-4 bg-white border border-gray-200 rounded-2xl outline-none shadow-sm">
+                    <button onclick="togglePass('regPass', 'eyeReg1')" class="absolute left-4 top-4 text-gray-400"><i id="eyeReg1" class="fas fa-eye-slash"></i></button>
+                </div>
+                <div class="relative">
+                    <input type="password" id="regPassConfirm" placeholder="تأكيد كلمة السر" class="w-full p-4 bg-white border border-gray-200 rounded-2xl outline-none shadow-sm">
+                    <button onclick="togglePass('regPassConfirm', 'eyeReg2')" class="absolute left-4 top-4 text-gray-400"><i id="eyeReg2" class="fas fa-eye-slash"></i></button>
+                </div>
+                <button id="btnRegister" onclick="handleRegister()" class="w-full bg-blue-600 text-white p-5 rounded-2xl font-bold text-xl shadow-lg active:scale-95 transition-all mt-2 font-extrabold">إنشاء الحساب</button>
+                <p class="text-center text-gray-600 text-sm font-bold">لديك حساب؟ <button onclick="showLogin()" class="text-blue-600 underline font-black">سجل دخولك</button></p>
+            </div>
+        </div>
+
+        <div id="loginScreen" class="hidden space-y-4">
+            <div class="text-right">
+                <h2 class="text-2xl font-bold text-gray-800">تسجيل الدخول</h2>
+                <p class="text-blue-600 text-[13px] font-bold">مرحباً بك مجدداً في عائلة أوسوكاش!</p>
+            </div>
+            <div class="space-y-4">
+                <div class="relative flex items-center" dir="ltr">
+                    <div class="absolute left-0 bg-gray-100 h-full flex items-center px-4 rounded-l-2xl border-r border-gray-200 font-bold text-blue-700">+222</div>
+                    <input type="number" id="loginPhone" placeholder="رقم الهاتف" oninput="if(this.value.length > 8) this.value = this.value.slice(0, 8);" class="w-full pl-20 pr-4 py-4 bg-white border border-gray-200 rounded-2xl outline-none shadow-sm font-bold">
+                </div>
+                <div class="relative">
+                    <input type="password" id="loginPass" placeholder="كلمة السر" class="w-full p-4 bg-white border border-gray-200 rounded-2xl outline-none shadow-sm">
+                    <button onclick="togglePass('loginPass', 'eyeLog')" class="absolute left-4 top-4 text-gray-400"><i id="eyeLog" class="fas fa-eye-slash"></i></button>
+                </div>
+                <button id="btnLogin" onclick="handleLogin()" class="w-full bg-blue-600 text-white p-5 rounded-2xl font-bold text-xl shadow-lg active:scale-95 transition-all font-extrabold">دخول</button>
+                <p class="text-center text-gray-600 text-sm font-bold">جديد؟ <button onclick="showRegister()" class="text-blue-600 underline font-black">أنشئ حساباً</button></p>
+            </div>
+        </div>
+
+        <div id="pendingScreen" class="hidden flex-grow flex flex-col items-center justify-center text-center p-4">
+            <div class="mb-6"><i class="fas fa-user-check text-blue-600 text-7xl"></i></div>
+            <h2 class="text-2xl font-black text-gray-800 mb-4">حسابك تحت المراجعة</h2>
+            <div class="bg-white p-6 rounded-[2rem] border border-blue-100 mb-8 w-full shadow-sm">
+                <p class="text-gray-700 leading-relaxed text-[15px]">مرحباً بك في أوسوكاش <span id="userNameDisplay" class="font-bold text-blue-600"></span>.<br><br>لقد استلمنا طلبك، وهو الآن قيد المراجعة.<br><br><span class="text-blue-700 font-semibold italic">"سوف يتم تفعيل حسابك قريباً."</span></p>
+            </div>
+            <button onclick="contactSupportGeneral()" class="w-full bg-green-50 text-green-600 py-4 rounded-2xl font-bold flex items-center justify-center gap-3 border border-green-100 active:scale-95 transition-all"><i class="fab fa-whatsapp text-xl"></i> تواصل مع الدعم الفني</button>
+        </div>
+    </div>
+
+    <div id="mainApp" class="hidden">
+        <header class="bg-white px-6 py-4 border-b border-slate-50 sticky top-0 z-50">
+            <div id="headerDefault" class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-blue-700 flex items-center justify-center text-white shadow-lg"><i class="fas fa-user-shield"></i></div>
+                    <div>
+                        <h2 id="hubUserName" class="text-xs font-900 text-slate-800">جاري التحميل...</h2>
+                        <p class="text-[9px] font-bold text-slate-400">مرحباً بك في OUSSOCASH</p>
+                    </div>
+                </div>
+                <div class="text-left">
+                    <h1 class="text-xl font-900 italic text-blue-800 leading-none">OUSSO<span class="text-blue-500">CASH</span></h1>
+                </div>
+            </div>
+            <div id="headerPlatform" class="hidden flex items-center gap-3">
+                <button onclick="goHome()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600"><i class="fas fa-arrow-right"></i></button>
+                <h2 id="activeTitle" class="text-sm font-900 text-blue-800 uppercase tracking-tighter"></h2>
+            </div>
+        </header>
+
+        <main class="max-w-md mx-auto p-5">
+            <section id="homeView" class="view-section active space-y-4">
+                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 px-1">اختر منصة التداول</h3>
+                <div onclick="openPlatform('1XBET')" class="platform-rect bg-[#0d47a1]">1XBET</div>
+                <div onclick="openPlatform('MELBET')" class="platform-rect bg-[#f59e0b] !text-black">MELBET</div>
+                <div onclick="openPlatform('LINEBET')" class="platform-rect bg-[#16a34a]">LINEBET</div>
+                <div onclick="openPlatform('STARS888')" class="platform-rect bg-[#dc2626]">STARS888</div>
+            </section>
+
+            <section id="platformView" class="view-section space-y-6">
+                <div class="flex p-1.5 bg-slate-100 rounded-2xl">
+                    <button id="depBtn" onclick="setFormMode('deposit')" class="flex-1 py-3 rounded-xl font-900 text-[11px] bg-white shadow-sm text-blue-700">إيداع</button>
+                    <button id="witBtn" onclick="setFormMode('withdraw')" class="flex-1 py-3 rounded-xl font-900 text-[11px] text-slate-400">سحب</button>
+                </div>
+                
+                <div id="withdrawContent" class="hidden space-y-4">
+                    <div class="bg-red-50 border-r-4 border-red-500 p-4 rounded-xl text-red-900">
+                        <h4 class="text-[12px] font-900 mb-1 uppercase">تنبيه أمان للسحب</h4>
+                        <p class="text-[10px] font-bold">يجب اختيار الوكيل أولاً في التطبيق: (المدينة: الرياض | الشارع: oussocash)</p>
+                        <button onclick="contactForWithdrawMethod()" class="w-full mt-3 py-2 bg-red-600 text-white text-[10px] font-black rounded-lg">شرح طريقة السحب</button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div onclick="selectBankW(this)" class="bank-option">Bankily</div>
+                        <div onclick="selectBankW(this)" class="bank-option">Masrivi</div>
+                        <div onclick="selectBankW(this)" class="bank-option">Sedad</div>
+                        <div onclick="selectBankW(this)" class="bank-option">BimBank</div>
+                    </div>
+                    <input type="text" id="wID" placeholder="ID حساب اللعبة" class="input-premium">
+                    <input type="text" id="wCode" placeholder="كود السحب من التطبيق" class="input-premium">
+                    <input type="number" id="wUserWallet" placeholder="رقم محفظة الاستلام" class="input-premium">
+                    <input type="number" id="wAmount" placeholder="المبلغ" class="input-premium">
+                    <button onclick="valW()" class="w-full py-5 rounded-2xl bg-blue-800 text-white font-900 text-xs shadow-lg">تأكيد طلب السحب</button>
+                </div>
+
+                <div id="depositContent" class="space-y-4">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div onclick="handleBankSelection(this, 'Bankily')" class="bank-option">Bankily</div>
+                        <div onclick="handleBankSelection(this, 'Masrivi')" class="bank-option">Masrivi</div>
+                        <div onclick="handleBankSelection(this, 'Sedad')" class="bank-option">Sedad</div>
+                        <div onclick="handleBankSelection(this, 'BimBank')" class="bank-option">BimBank</div>
+                    </div>
+                    <div id="walletBox" class="hidden p-5 bg-blue-50 border border-blue-100 rounded-2xl flex justify-between items-center">
+                        <div class="flex flex-col"><span class="text-[9px] font-black text-blue-400">حول إلى الرقم:</span><span id="wNum" class="text-lg font-900 text-blue-800 tracking-widest"></span></div>
+                        <button onclick="copyW()" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-black">نسخ</button>
+                    </div>
+                    <input type="text" id="dID" placeholder="ID حساب المنصة" class="input-premium">
+                    <input type="number" id="dAmount" placeholder="المبلغ الذي حولته" class="input-premium">
+                    <input type="number" id="dSenderPhone" placeholder="رقم الهاتف المحول منه" class="input-premium">
+                    <input type="number" id="last4Digits" placeholder="آخر 4 أرقام من معرف العملية" class="input-premium">
+                    <button onclick="valD()" class="w-full py-5 rounded-2xl bg-blue-700 text-white font-900 text-xs shadow-lg">إرسال طلب الشحن</button>
+                </div>
+            </section>
+
+            <section id="promoView" class="view-section space-y-6">
+                <div class="promo-premium-card p-8 rounded-[35px] shadow-2xl text-center">
+                    <div class="promo-shine"></div>
+                    <h3 class="text-blue-300 text-[11px] font-black uppercase mb-4">كود البونص العالمي المعتمد</h3>
+                    <div class="relative inline-block group">
+                        <div class="absolute -inset-1 bg-blue-500 rounded-2xl blur opacity-20 group-hover:opacity-100 transition duration-1000"></div>
+                        <div class="relative flex items-center gap-5 bg-black/40 py-4 px-8 rounded-2xl border border-white/20">
+                            <span id="promoCodeVal" class="text-4xl font-black text-white tracking-widest">OUSSO</span>
+                            <button onclick="copyPromo()" class="bg-blue-600 text-white w-12 h-12 rounded-xl flex items-center justify-center"><i class="fas fa-copy"></i></button>
+                        </div>
+                    </div>
+                    <p class="text-yellow-400 text-[12px] font-black mt-5"> سجل الآن واحصل على بونص 300% </p>
+                </div>
+                <div class="bg-white p-6 rounded-[30px] border border-blue-50 shadow-sm space-y-4">
+                    <div class="flex items-start gap-3 bg-blue-50 p-4 rounded-xl">
+                        <div class="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center font-black text-xs shrink-0">1</div>
+                        <p class="text-[11px] font-bold text-slate-700">بونص أول إيداع: عند استخدام كود <span class="underline">OUSSO</span> ستحصل على ثلاثة أضعاف مبلغك الأول.</p>
+                    </div>
+                    <div class="flex items-start gap-3 bg-yellow-50 p-4 rounded-xl">
+                        <div class="w-8 h-8 bg-yellow-500 text-white rounded-lg flex items-center justify-center shrink-0"><i class="fas fa-star text-xs"></i></div>
+                        <p class="text-[11px] font-bold text-slate-700">بونص الأيام السعيدة: كل يوم إثنين وجمعة مكافأة إضافية 100% لمستخدمي الرمز.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="aboutView" class="view-section space-y-6">
+                <div class="flex justify-between items-center bg-blue-50/50 p-4 rounded-2xl border border-blue-100 mb-2">
+                    <div class="flex items-center">
+                        <span class="dot-pulse"></span>
+                        <span class="text-[10px] font-black text-slate-600">المستخدمون النشطون الآن:</span>
+                    </div>
+                    <span id="activeUsersCounter" class="text-xs font-900 text-blue-700">10,000</span>
+                </div>
+
+                <div class="bg-white p-8 rounded-[40px] text-center shadow-sm relative overflow-hidden">
+                    <div class="w-20 h-20 bg-blue-600 text-white rounded-[30px] flex items-center justify-center text-3xl mx-auto mb-6"><i class="fas fa-shield-check"></i></div>
+                    <h3 class="text-2xl font-900 text-slate-800">OUSSOCASH</h3>
+                    <div class="mt-8 text-right space-y-4">
+                        <div>
+                            <h4 class="text-sm font-900 text-blue-800 mb-1">من نحن:</h4>
+                            <p class="text-[11px] font-bold text-slate-600 leading-[1.6]">OUSSOCASH هي منصة رقمية متخصصة في تقديم حلول الإيداع والسحب للمنصات العالمية، أُنشئت لتكون حلًا موثوقًا يربط المستخدم بالخدمات الرقمية الحديثة عبر تجربة استخدام سلسة، واضحة، وخالية من التعقيد. نعمل وفق معايير تشغيل دقيقة تضمن تنفيذ العمليات بسرعة وكفاءة، مع الحفاظ الكامل على الشفافية في جميع مراحل المعاملة.</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-900 text-blue-800 mb-1">ميثاق الأمان:</h4>
+                            <p class="text-[11px] font-bold text-slate-600 leading-[1.6]">نطمح في OUSSOCASH إلى بناء منظومة مالية رقمية آمنة ومستقرة، تكون الخيار الأول للمستخدمين الباحثين عن الاعتمادية والاحترافية. رسالتنا هي تمكين الأفراد من إدارة معاملاتهم الرقمية بثقة، عبر حلول تقنية مرنة، دعم فعّال، وخدمات تتطور باستمرار لتواكب متطلبات العصر الرقمي.</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-900 text-blue-800 mb-1">لماذا يختارنا المحترفون؟:</h4>
+                            <p class="text-[11px] font-bold text-slate-600 leading-[1.6]">لأن الأداء لا يقبل الانتظار. في OUSSOCASH تتم معالجة الطلبات خلال 1 دقيقة إلى 3 دقائق كحد أقصى، مع التزام صارم بالدقة، الأمان، والشفافية. حلول موثوقة صُممت خصيصًا لمن يعتمدون على السرعة والكفاءة في كل معاملة.</p>
+                        </div>
+                    </div>    
+                    <button onclick="contactSupportGeneral()" class="w-full mt-6 py-4 bg-green-500 text-white rounded-2xl font-900 text-xs shadow-lg flex items-center justify-center gap-3"><i class="fab fa-whatsapp text-lg"></i> محادثة مباشرة مع الدعم الفني</button>
+                </div>
+            </section>
+
+            <section id="historyView" class="view-section">
+                <div class="history-header"><h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">سجل المعاملات الخاصة بك</h3></div>
+                <div id="historyList" class="space-y-3 mt-4"></div>
+            </section>
+        </main>
+
         <nav class="nav-bar">
-            <button class="nav-btn active" onclick="showSec('trade', this)">المعاملات</button>
-            <button class="nav-btn" onclick="showSec('about', this)">المؤسسة</button>
-            <button class="nav-btn" onclick="showSec('promo', this)">بونص</button>
-            <button class="nav-btn" onclick="showSec('help', this)">الدعم</button>
-            <button class="nav-btn" onclick="showSec('orders', this)">السجل</button>
+            <div onclick="goHome()" class="nav-item active" id="navHome"><i class="fas fa-home"></i><span>الرئيسية</span></div>
+            <div onclick="switchView('historyView', this)" class="nav-item"><i class="fas fa-receipt"></i><span>المعاملات</span></div>
+            <div onclick="switchView('promoView', this)" class="nav-item"><i class="fas fa-ticket-alt"></i><span>بروموكود</span></div>
+            <div onclick="switchView('aboutView', this)" class="nav-item"><i class="fas fa-info-circle"></i><span>من نحن</span></div>
         </nav>
     </div>
 
-    <main class="content-area">
-        
-        <section id="about" class="section-card hidden">
-            <div class="live-status">
-                <span class="pulse-dot"></span>
-                العملاء النشطون الآن: <span id="visitor-count">4,820</span>
-            </div>
-            <div class="card-title">لماذا تختار OUSSOCASH</div>
-            <p style="font-size: 14px; color: var(--text-light);">بصفتنا مؤسسة مالية متخصصة، نلتزم بتوفير بيئة تداول آمنة وسرعة فائقة في معالجة طلبات السيولة الرقمية، مع ضمان حماية كاملة للأموال بنسبة 100%.</p>
-            
-            <div class="stat-grid">
-                <div class="stat-item"><span class="stat-value">+50,000</span><label class="stat-label">عملية منفذة</label></div>
-                <div class="stat-item"><span class="stat-value">100%</span><label class="stat-label">ضمان استرداد</label></div>
-                <div class="stat-item"><span class="stat-value">1 دقيقة</span><label class="stat-label">وقت التنفيذ</label></div>
-                <div class="stat-item"><span class="stat-value">24/7</span><label class="stat-label">خدمة مستمرة</label></div>
-            </div>
-        </section>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, query, where, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        <section id="trade" class="section-card">
-            <div class="card-title">إنشاء طلب جديد</div>
-            
-            <div class="field-group">
-                <label class="field-label">نوع العملية المالية</label>
-                <select id="opType" onchange="toggleFormView()">
-                    <option value="deposit">إيداع رصيد (شحن)</option>
-                    <option value="withdraw">سحب رصيد (كاش)</option>
-                </select>
-            </div>
-
-            <div id="dep-logic">
-                <div class="field-group">
-                    <label class="field-label">اختيار المؤسسة البنكية</label>
-                    <select id="depBank" onchange="fetchWallet()">
-                        <option value="">-- اختر البنك للمتابعة --</option>
-                        <option value="bankily">Bankily</option>
-                        <option value="masrivi">Masrivi</option>
-                        <option value="sedad">Sedad</option>
-                    </select>
-                </div>
-
-                <div id="wallet-info" class="hidden">
-                    <div style="background: var(--soft-blue); padding: 25px; border-radius: 12px; text-align: center; border: 1px solid var(--royal); margin-bottom: 20px;">
-                        <span style="font-size: 11px; font-weight: 800; color: var(--text-light); display: block;">رقم حساب وكالة OUSSOCASH</span>
-                        <b id="activeNum" style="font-size: 26px; color: var(--navy); letter-spacing: 1px;">00000000</b>
-                        <div onclick="copyData('activeNum')" style="color: var(--royal); font-size: 12px; font-weight: 900; margin-top: 10px; cursor: pointer;">نسخ الرقم</div>
-                    </div>
-
-                    <div class="field-group">
-                        <label class="field-label">وثيقة إثبات التحويل</label>
-                        <div class="upload-box" onclick="document.getElementById('fileInp').click()">
-                            <span id="upTxt">اضغط هنا لإرفاق صورة التحويل</span>
-                            <input type="file" id="fileInp" class="hidden" accept="image/*" onchange="handleFile(this)">
-                            <img id="preview-img">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="with-logic" class="hidden">
-                <div style="background: #FEF2F2; color: #991B1B; padding: 15px; border-radius: 10px; font-size: 12px; font-weight: 700; margin-bottom: 20px; border: 1px solid #FCA5A5;">
-                    ملاحظة: يتم تسليم النقد في مقر الوكالة الرسمي (مقاطعة الرياض).
-                </div>
-                <div class="field-group">
-                    <label class="field-label">كود السحب البنكي</label>
-                    <input type="text" id="wCode" placeholder="أدخل الكود الصادر من التطبيق">
-                </div>
-            </div>
-
-            <div class="field-group">
-                <label class="field-label">بيانات الحساب</label>
-                <input type="text" id="accId" placeholder="رقم المعرف الرقمي (ID)" style="margin-bottom: 12px;">
-                <input type="number" id="amount" placeholder="القيمة المالية المطلوبة" style="margin-bottom: 12px;">
-                <input type="number" id="userPhone" placeholder="رقم هاتفك الرسمي">
-            </div>
-
-            <button class="btn-action" id="subBtn" onclick="sendToFirebase()">تأكيد وإرسال الطلب الآن</button>
-        </section>
-
-        <section id="promo" class="section-card hidden">
-            <div class="card-title">برنامج الولاء</div>
-            <div class="promo-ticket">
-                <p style="font-size: 12px; font-weight: 700; opacity: 0.8;">مكافأة التسجيل الأولى 200%</p>
-                <div class="promo-val" id="pCode">OUSSO</div>
-                <button onclick="copyData('pCode')" style="background: var(--royal); color: white; border: none; padding: 10px 30px; border-radius: 8px; font-weight: 800; cursor: pointer;">نسخ الرمز</button>
-                <p style="font-size: 11px; margin-top: 30px; line-height: 2;">تأكد من إدخال الرمز الترويجي أثناء إنشاء حسابك الجديد للحصول على المكافأة فور الإيداع الأول عبر وكالتنا.</p>
-            </div>
-        </section>
-
-        <section id="help" class="section-card hidden">
-            <div class="card-title">مركز المساعدة والضمان</div>
-            <p style="font-size: 13px; color: var(--text-light); margin-bottom: 25px;">نحن هنا لضمان انسيابية تعاملاتكم. اختر وسيلة التواصل المناسبة:</p>
-            
-            <div class="support-card" onclick="openWa()">
-                <div class="support-info">
-                    <h4>مستشار الدعم المباشر</h4>
-                    <p>استجابة احترافية فورية (متصل الآن)</p>
-                </div>
-                <div style="font-size: 12px; color: var(--royal); font-weight: 900;">مراسلة</div>
-            </div>
-
-            <div class="support-card">
-                <div class="support-info">
-                    <h4>الأمان والشفافية</h4>
-                    <p>نظام OUSSOCASH مشفر بالكامل لحماية بياناتك</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="orders" class="section-card hidden">
-            <div class="card-title">متابعة الطلبات</div>
-            <div id="historyList" style="text-align: center; color: var(--text-light); font-size: 13px;">لا توجد سجلات حالية.</div>
-        </section>
-
-        <div class="admin-trigger" onclick="loginAdmin()">ADMIN CONTROL PANEL</div>
-
-    </main>
-
-    <script>
-        // --- Firebase Init ---
-        const firebaseConfig = { 
-            databaseURL: "https://oussocash-default-rtdb.firebaseio.com",
-            storageBucket: "oussocash-default-rtdb.appspot.com" 
+        const firebaseConfig = {
+            apiKey: "AIzaSyBApaGeKAhJ4V95mLVBvIGYyiYSOxXUSn8",
+            authDomain: "oussocash-b1def.firebaseapp.com",
+            projectId: "oussocash-b1def",
+            storageBucket: "oussocash-b1def.firebasestorage.app",
+            messagingSenderId: "331491436802",
+            appId: "1:331491436802:web:d9670dfd3dfffb06f33a1b"
         };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const st = firebase.storage();
 
-        // --- Realistic Visitor Counter Logic ---
-        let baseVisitors = 4820;
-        function smoothVisitorCounter() {
-            // إضافة أو طرح رقم صغير (بين 5 و 12)
-            const change = Math.floor(Math.random() * 8) + 5;
-            const up = Math.random() > 0.45; // فرصة أكبر قليلاً للزيادة لإعطاء انطباع بالنمو
-            
-            if(up && baseVisitors < 9900) baseVisitors += change;
-            else if(!up && baseVisitors > 1200) baseVisitors -= change;
-            
-            document.getElementById('visitor-count').innerText = baseVisitors.toLocaleString();
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        let currentUserPhone = null;
+        let currentUserName = "";
+
+        let supportConfig = {
+            general: "22247343267",
+            withdraw: "22247343267",
+            orders: "22247343267"
+        };
+
+        function initSupportListener() {
+            onSnapshot(doc(db, "settings", "whatsapp"), (snap) => {
+                if(snap.exists()) supportConfig.general = snap.data().number || supportConfig.general;
+            });
+            onSnapshot(doc(db, "settings", "withdraw_support"), (snap) => {
+                if(snap.exists()) supportConfig.withdraw = snap.data().number || supportConfig.withdraw;
+            });
+            onSnapshot(doc(db, "settings", "orders_support"), (snap) => {
+                if(snap.exists()) supportConfig.orders = snap.data().number || supportConfig.orders;
+            });
         }
-        setInterval(smoothVisitorCounter, 3500); // تحديث كل 3.5 ثانية
+        initSupportListener();
 
-        // --- App Settings Management ---
-        let remoteSettings = {};
-        db.ref('settings').on('value', snap => {
-            remoteSettings = snap.val() || { wallets: {}, whatsapp: "222" };
-        });
+        window.contactSupportGeneral = () => {
+            window.open(`https://wa.me/${supportConfig.general}`, '_blank');
+        };
 
-        // --- UI Navigation ---
-        function showSec(id, btn) {
-            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            if(id === 'orders') renderHistory();
-            window.scrollTo(0,0);
-        }
+        window.contactForWithdrawMethod = () => {
+            const msg = encodeURIComponent("أريد شرح طريقة السحب عبر الوكيل");
+            window.open(`https://wa.me/${supportConfig.withdraw}?text=${msg}`, '_blank');
+        };
 
-        function toggleFormView() {
-            const isDep = document.getElementById('opType').value === 'deposit';
-            document.getElementById('dep-logic').classList.toggle('hidden', !isDep);
-            document.getElementById('with-logic').classList.toggle('hidden', isDep);
-        }
-
-        function fetchWallet() {
-            const bank = document.getElementById('depBank').value;
-            if(bank) {
-                document.getElementById('activeNum').innerText = remoteSettings.wallets[bank] || "غير متوفر";
-                document.getElementById('wallet-info').classList.remove('hidden');
+        function updateActiveUsers() {
+            const counterEl = document.getElementById('activeUsersCounter');
+            function getSynchronizedCount() {
+                const now = new Date();
+                const totalSeconds = (now.getUTCHours() * 3600) + (now.getUTCMinutes() * 60) + now.getUTCSeconds();
+                const cycle = 21600; 
+                const wave = (Math.sin((totalSeconds / cycle) * 2 * Math.PI) + 1) / 2;
+                const base = 10000 + (wave * 9500); 
+                const noise = Math.floor(Math.abs(Math.cos(totalSeconds) * 450));
+                return Math.floor(base + noise);
             }
+            setInterval(() => {
+                counterEl.innerText = getSynchronizedCount().toLocaleString();
+            }, 3000);
+            counterEl.innerText = getSynchronizedCount().toLocaleString();
         }
+        updateActiveUsers();
 
-        // --- Helper Functions ---
-        function handleFile(inp) {
-            if (inp.files && inp.files[0]) {
-                const r = new FileReader();
-                r.onload = e => {
-                    const img = document.getElementById('preview-img');
-                    img.src = e.target.result;
-                    img.style.display = 'block';
-                    document.getElementById('upTxt').style.display = 'none';
-                };
-                r.readAsDataURL(inp.files[0]);
+        window.showLogin = () => { document.getElementById('registerScreen').classList.add('hidden'); document.getElementById('loginScreen').classList.remove('hidden'); };
+        window.showRegister = () => { document.getElementById('loginScreen').classList.add('hidden'); document.getElementById('registerScreen').classList.remove('hidden'); };
+        window.togglePass = (id, iconId) => {
+            const el = document.getElementById(id); const icon = document.getElementById(iconId);
+            if(el.type === "password") { el.type = "text"; icon.classList.replace('fa-eye-slash', 'fa-eye'); }
+            else { el.type = "password"; icon.classList.replace('fa-eye', 'fa-eye-slash'); }
+        };
+
+        window.closeModal = () => document.getElementById('errorModal').classList.add('hidden');
+        window.showModernAlert = (title, msg, isSuccess = false) => {
+            const modal = document.getElementById('errorModal');
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('errorMessage').innerText = msg;
+            const iconBox = document.getElementById('modalIconBox');
+            const icon = document.getElementById('modalIcon');
+            const btn = document.getElementById('modalBtn');
+            if(isSuccess) {
+                iconBox.className = "w-20 h-20 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4";
+                icon.className = "fas fa-check-circle text-3xl";
+                btn.className = "w-full success-gradient text-white py-4 rounded-2xl font-bold";
+            } else {
+                iconBox.className = "w-20 h-20 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4";
+                icon.className = "fas fa-exclamation-triangle text-3xl";
+                btn.className = "w-full bg-gray-900 text-white py-4 rounded-2xl font-bold";
             }
-        }
+            modal.classList.remove('hidden');
+        };
 
-        function copyData(id) {
-            navigator.clipboard.writeText(document.getElementById(id).innerText);
-            showModal("تم النسخ", "يمكنك الآن استخدام البيانات لإتمام العملية.");
-        }
-
-        function openWa() {
-            window.open(`https://wa.me/${remoteSettings.whatsapp}`, '_blank');
-        }
-
-        function showModal(h, p) {
-            document.getElementById('modal-h').innerText = h;
-            document.getElementById('modal-p').innerText = p;
-            document.getElementById('ousso-modal-overlay').style.display = 'flex';
-        }
-        function closeModal() { document.getElementById('ousso-modal-overlay').style.display = 'none'; }
-
-        // --- Database Logic ---
-        async function sendToFirebase() {
-            const btn = document.getElementById('subBtn');
-            const type = document.getElementById('opType').value;
-            const phone = document.getElementById('userPhone').value;
-            const amount = document.getElementById('amount').value;
-            const accId = document.getElementById('accId').value;
-            const file = document.getElementById('fileInp').files[0];
-
-            if(!phone || !amount || !accId) return showModal("تنبيه", "يرجى إدخال كافة البيانات المطلوبة.");
-            
-            btn.disabled = true;
-            btn.innerText = "جاري التأمين والإرسال...";
-
+        window.handleRegister = async () => {
+            const name = document.getElementById('regName').value;
+            const phone = document.getElementById('regPhone').value;
+            const pass = document.getElementById('regPass').value;
+            const passConfirm = document.getElementById('regPassConfirm').value;
+            if(!name || phone.length !== 8 || pass.length < 6) return showModernAlert("تنبيه", "تأكد من إدخال اسمك ورقم هاتفك (8 أرقام) وكلمة سر قوية");
+            if(pass !== passConfirm) return showModernAlert("خطأ", "كلمتا السر غير متطابقتين");
+            const btn = document.getElementById('btnRegister'); btn.disabled = true;
             try {
-                let imgUrl = "-";
-                if(type === 'deposit' && file) {
-                    const ref = st.ref(`vault/${Date.now()}_${phone}`);
-                    await ref.put(file);
-                    imgUrl = await ref.getDownloadURL();
+                const email = `${phone}@oussocash.com`;
+                await createUserWithEmailAndPassword(auth, email, pass);
+                await setDoc(doc(db, "users", phone), { fullName: name, phone: phone, status: "pending", balance: 0, createdAt: new Date() });
+                document.getElementById('registerScreen').classList.add('hidden');
+                document.getElementById('pendingScreen').classList.remove('hidden');
+                document.getElementById('userNameDisplay').innerText = name;
+            } catch (e) { showModernAlert("فشل", "هذا الرقم مسجل مسبقاً لدينا"); } finally { btn.disabled = false; }
+        };
+
+        window.handleLogin = async () => {
+            const phone = document.getElementById('loginPhone').value;
+            const pass = document.getElementById('loginPass').value;
+            if(phone.length !== 8 || !pass) return showModernAlert("تنبيه", "أدخل رقم الهاتف وكلمة السر");
+            const btn = document.getElementById('btnLogin'); btn.disabled = true;
+            try {
+                const email = `${phone}@oussocash.com`;
+                await signInWithEmailAndPassword(auth, email, pass);
+                checkUserStatus(phone);
+            } catch (e) { showModernAlert("خطأ", "رقم الهاتف أو كلمة السر غير صحيحة"); } finally { btn.disabled = false; }
+        };
+
+        async function checkUserStatus(phone) {
+            const snap = await getDoc(doc(db, "users", phone));
+            if(snap.exists()){
+                const data = snap.data();
+                if(data.status === "pending"){
+                    document.getElementById('loginScreen').classList.add('hidden');
+                    document.getElementById('registerScreen').classList.add('hidden');
+                    document.getElementById('pendingScreen').classList.remove('hidden');
+                    document.getElementById('userNameDisplay').innerText = data.fullName;
+                } else {
+                    currentUserPhone = phone;
+                    currentUserName = data.fullName;
+                    launchApp(data);
                 }
-
-                await db.ref('orders').push({
-                    type, phone, amount, accId, 
-                    proof: imgUrl, 
-                    wCode: document.getElementById('wCode').value || "-",
-                    status: "pending",
-                    date: new Date().toLocaleString('ar-SA')
-                });
-
-                localStorage.setItem('my_phone', phone);
-                showModal("تم القبول", "استلمنا طلبك بنجاح. سيتم التنفيذ خلال لحظات.");
-                location.reload();
-
-            } catch (e) {
-                showModal("خطأ", "فشل الاتصال بالخادم الرئيسي.");
-                btn.disabled = false;
             }
         }
 
-        function renderHistory() {
-            const p = localStorage.getItem('my_phone');
-            const list = document.getElementById('historyList');
-            if(!p) return;
+        function launchApp(userData) {
+            document.getElementById('authContainer').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            document.getElementById('hubUserName').innerText = userData.fullName;
+            renderLogs();
+        }
 
-            db.ref('orders').orderByChild('phone').equalTo(p).limitToLast(5).on('value', snap => {
-                list.innerHTML = "";
-                if(!snap.exists()) return list.innerHTML = "لا توجد معاملات سابقة.";
-                snap.forEach(c => {
-                    const o = c.val();
-                    const st = o.status === 'done' ? 'مكتمل' : 'قيد المعالجة';
-                    list.innerHTML += `
-                        <div style="background:var(--soft-blue); padding:15px; border-radius:12px; margin-bottom:10px; text-align:right; border-right:4px solid var(--royal);">
-                            <b>${o.type === 'deposit' ? 'إيداع' : 'سحب'} - ${o.amount} MRU</b><br>
-                            <small>${o.date} | الحالة: ${st}</small>
-                        </div>
-                    `;
-                });
+        let currentPlatformBanksData = {};
+        function syncPlatformBanks(platformName) {
+            onSnapshot(doc(db, "bank", platformName), (snap) => {
+                currentPlatformBanksData = snap.exists() ? snap.data() : {};
             });
         }
 
-        // --- Admin Access ---
-        function loginAdmin() {
-            const pw = prompt("ADMIN PASSCODE:");
-            if(pw === "1234") {
-                // الكود هنا يفتح واجهة الإدارة كما في النسخ السابقة
-                alert("لوحة التحكم متاحة في الخلفية، جاري توجيهك.");
-                // يمكن تفعيل واجهة الأدمن بنفس منطق النسخ السابقة
+        window.handleBankSelection = (el, bankName) => {
+            document.querySelectorAll('#depositContent .bank-option').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+            window.selectedDepBank = bankName;
+            const num = currentPlatformBanksData[bankName];
+            if(num) {
+                document.getElementById('walletBox').classList.remove('hidden');
+                document.getElementById('wNum').innerText = num;
+            } else {
+                document.getElementById('walletBox').classList.add('hidden');
+                showToast("غير متوفر حالياً لهذا البنك", "#ef4444");
             }
+        };
+
+        window.openPlatform = (n) => {
+            window.activeP = n; 
+            syncPlatformBanks(n);
+            switchView('platformView', document.getElementById('navHome'));
+            document.getElementById('activeTitle').innerText = n;
+            document.getElementById('walletBox').classList.add('hidden');
+            const savedID = localStorage.getItem(`savedID_${n}`);
+            if(savedID) {
+                document.getElementById('dID').value = savedID;
+                document.getElementById('wID').value = savedID;
+            } else {
+                document.getElementById('dID').value = "";
+                document.getElementById('wID').value = "";
+            }
+        };
+
+        window.goHome = () => switchView('homeView', document.getElementById('navHome'));
+        window.switchView = (id, el) => {
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(el) el.classList.add('active');
+            document.getElementById('headerDefault').classList.toggle('hidden', id === 'platformView');
+            document.getElementById('headerPlatform').classList.toggle('hidden', id !== 'platformView');
+            if(id === 'historyView') renderLogs();
+        };
+
+        window.setFormMode = (m) => {
+            const isDep = m === 'deposit';
+            document.getElementById('depositContent').classList.toggle('hidden', !isDep);
+            document.getElementById('withdrawContent').classList.toggle('hidden', isDep);
+            document.getElementById('depBtn').className = isDep ? "flex-1 py-3 rounded-xl font-900 text-[11px] bg-white shadow-sm text-blue-700" : "flex-1 py-3 rounded-xl font-900 text-[11px] text-slate-400";
+            document.getElementById('witBtn').className = !isDep ? "flex-1 py-3 rounded-xl font-900 text-[11px] bg-white shadow-sm text-blue-800" : "flex-1 py-3 rounded-xl font-900 text-[11px] text-slate-400";
+        };
+
+        window.selectBankW = (el) => {
+            document.querySelectorAll('#withdrawContent .bank-option').forEach(b => b.classList.remove('active'));
+            el.classList.add('active'); window.selectedWitBank = el.innerText;
+        };
+
+        window.showToast = (m, c = "#1e293b") => { const t = document.getElementById("toast"); t.innerText = m; t.style.backgroundColor = c; t.className = "show"; setTimeout(() => t.className = "", 3000); };
+        window.copyPromo = () => { navigator.clipboard.writeText("OUSSO"); showToast("تم نسخ الكود", "#16a34a"); };
+        window.copyW = () => { navigator.clipboard.writeText(document.getElementById('wNum').innerText); showToast("تم النسخ بنجاح"); };
+
+        async function submitData(data) {
+            const oID = String(Math.floor(100000000 + Math.random() * 900000000));
+            showToast("جاري إرسال طلبك...");
+            try {
+                await setDoc(doc(db, "Requests", oID), { 
+                    ...data, 
+                    orderID: oID, 
+                    userPhone: currentUserPhone,
+                    status: "تحت المراجعة", 
+                    timestamp: serverTimestamp() 
+                });
+                localStorage.setItem(`savedID_${data.platform}`, data.playerID);
+                showToast("تم إرسال الطلب بنجاح", "#16a34a");
+                switchView('historyView', document.querySelectorAll('.nav-item')[1]);
+            } catch (e) { showToast("خطأ في الاتصال بالخادم"); }
         }
+
+        window.valD = () => {
+            const id = document.getElementById('dID').value, am = document.getElementById('dAmount').value, ph = document.getElementById('dSenderPhone').value, l4 = document.getElementById('last4Digits').value;
+            if(!window.selectedDepBank || !id || !am || !l4) return showModernAlert("بيانات ناقصة", "يرجى ملء جميع الحقول واختيار البنك");
+            submitData({ type: "إيداع", platform: window.activeP, playerID: id, amount: am, bank: window.selectedDepBank, senderPhone: ph, last4Digits: l4 });
+        };
+
+        window.valW = () => {
+            const id = document.getElementById('wID').value, am = document.getElementById('wAmount').value, ph = document.getElementById('wUserWallet').value, cd = document.getElementById('wCode').value;
+            if(!window.selectedWitBank || !id || !am || !cd) return showModernAlert("بيانات ناقصة", "يرجى ملء جميع بيانات السحب واختيار البنك");
+            submitData({ type: "سحب", platform: window.activeP, playerID: id, amount: am, bank: window.selectedWitBank, userWallet: ph, wCode: cd });
+        };
+
+        function renderLogs() {
+            if(!currentUserPhone) return;
+            const list = document.getElementById('historyList');
+            const q = query(collection(db, "Requests"), where("userPhone", "==", currentUserPhone));
+            
+            onSnapshot(q, (snap) => {
+                if(snap.empty) { 
+                    list.innerHTML = '<div class="text-center py-10 text-slate-300 text-xs font-bold">لا توجد معاملات مسجلة بعد</div>'; 
+                    return; 
+                }
+
+                const sortedDocs = snap.docs.sort((a, b) => (b.data().timestamp?.seconds || 0) - (a.data().timestamp?.seconds || 0));
+
+                list.innerHTML = sortedDocs.map(docSnap => {
+                    const l = docSnap.data();
+                    let sC = l.status === 'مقبول' ? 'text-green-600 bg-green-50' : (l.status === 'مرفوض' ? 'text-red-600 bg-red-50' : 'text-blue-500 bg-blue-50');
+                    
+                    let supportBtn = "";
+                    if(l.status === 'مرفوض') {
+                        const msg = encodeURIComponent(`مرحباً دعم أوسوكاش، لدي مشكلة في الطلب المرفوض رقم: ${l.orderID}`);
+                        supportBtn = `
+                            <a href="https://wa.me/${supportConfig.orders}?text=${msg}" target="_blank" 
+                               class="mt-3 w-full py-2 bg-green-500 text-white text-[9px] font-black rounded-xl flex items-center justify-center gap-2 active:scale-95 transition-all">
+                               <i class="fab fa-whatsapp"></i> تواصل مع الدعم لحل المشكلة
+                            </a>`;
+                    }
+
+                    return `<div class="bg-white p-4 rounded-2xl mb-3 shadow-sm border border-slate-100 animate-pop">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="bg-slate-900 text-white text-[8px] px-2 py-1 rounded-full">#${l.orderID}</span>
+                                    <span class="text-[9px] font-black text-slate-400 uppercase">${l.type}</span>
+                                </div>
+                                <div class="flex justify-between items-end">
+                                    <div>
+                                        <h4 class="text-[10px] font-900">${l.platform}</h4>
+                                        <p class="text-[9px] text-slate-400">ID: ${l.playerID}</p>
+                                        <div class="${sC} text-[8px] font-black px-2 py-1 rounded mt-1 inline-block">${l.status}</div>
+                                    </div>
+                                    <div class="text-left"><p class="text-xs font-900 text-blue-800">${l.amount} MRU</p></div>
+                                </div>
+                                ${supportBtn}
+                            </div>`;
+                }).join('');
+            });
+        }
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const phone = user.email.split('@')[0];
+                checkUserStatus(phone);
+            }
+        });
     </script>
 </body>
 </html>
